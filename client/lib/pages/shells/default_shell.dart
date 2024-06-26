@@ -15,6 +15,7 @@ class DefaultShell extends StatelessWidget {
       body: Stack(
         children: [
           Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               WindowTitleBarBox(
                 child: Row(

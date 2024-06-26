@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:client/data/task_data.dart';
 import 'package:client/pages/shells/default_shell.dart';
@@ -27,6 +28,9 @@ void main() async {
     ChangeNotifierProvider(
       create: (context) => TaskProvider(),
       child: MaterialApp(
+        scrollBehavior: MaterialScrollBehavior().copyWith(
+          dragDevices: {PointerDeviceKind.mouse},
+        ),
         debugShowCheckedModeBanner: false,
         home: Scaffold(
           body: DefaultShell(),
@@ -40,6 +44,7 @@ Future<void> initWindowManager() async {
   appWindow.show();
   doWhenWindowReady(() {
     final win = appWindow;
+    win.minSize = Size(600, 600);
     win.alignment = Alignment.center;
     win.title = "Custom window with Flutter";
     win.show();

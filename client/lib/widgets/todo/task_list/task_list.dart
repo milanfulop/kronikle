@@ -1,13 +1,13 @@
-import 'package:client/widgets/todo/task_list/task_box.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:client/data/task_data.dart';
+import 'package:client/widgets/todo/task_list/task_box.dart';
 
 class TaskList extends StatefulWidget {
   final String category;
 
-  const TaskList({Key? key, required this.category}) : super(key: key);
+  const TaskList({required this.category, Key? key}) : super(key: key);
 
   @override
   State<TaskList> createState() => _TaskListState();
@@ -167,8 +167,9 @@ class _TaskListState extends State<TaskList> {
 
   void _createNewTask(BuildContext context, String taskName) {
     if (taskName.isNotEmpty) {
-      Task newTask = Task(name: taskName, category: widget.category);
-      Provider.of<TaskProvider>(context, listen: false).addTask(newTask);
+      Task newTask = Task(name: taskName);
+      Provider.of<TaskProvider>(context, listen: false)
+          .addTask(widget.category, newTask);
     }
     _newTaskController.clear();
     setState(() {
