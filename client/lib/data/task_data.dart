@@ -3,31 +3,50 @@ import 'package:flutter/foundation.dart';
 class Task {
   String name;
   bool completed;
+  String category;
 
-  Task({required this.name, this.completed = false});
+  Task({
+    required this.name,
+    required this.category,
+    this.completed = false,
+  });
 }
 
 class TaskProvider extends ChangeNotifier {
-  List<Task> _tasks = [
-    Task(
-      name: "task 010010101 0 101 task 111 task 1 1 1 1 1",
-      completed: false,
-    ),
-    Task(
-      name: "xd",
-      completed: false,
-    ),
-  ];
+  Map<String, List<Task>> _tasksByCategory = {
+    'General': [
+      Task(name: "task 1", category: 'General', completed: false),
+      Task(name: "task 2", category: 'General', completed: false),
+    ],
+    'Work': [
+      Task(name: "work task 1", category: 'Work', completed: false),
+      Task(name: "work task 2", category: 'Work', completed: false),
+    ],
+  };
 
-  List<Task> get tasks => _tasks;
+  List<Task> get allTasks {
+    List<Task> allTasks = [];
+    _tasksByCategory.values.forEach((categoryTasks) {
+      allTasks.addAll(categoryTasks);
+    });
+    return allTasks;
+  }
+
+  List<Task> tasksInCategory(String category) {
+    return _tasksByCategory[category] ?? [];
+  }
 
   void addTask(Task task) {
-    _tasks.add(task);
+    if (_tasksByCategory.containsKey(task.category)) {
+      _tasksByCategory[task.category]!.add(task);
+    } else {
+      _tasksByCategory[task.category] = [task];
+    }
     notifyListeners();
   }
 
   void removeTask(Task task) {
-    _tasks.remove(task);
+    _tasksByCategory[task.category]?.remove(task);
     notifyListeners();
   }
 

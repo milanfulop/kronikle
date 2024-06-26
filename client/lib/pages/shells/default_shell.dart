@@ -1,5 +1,6 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:client/components/left_drawer_button/left_drawer_button.dart';
+import 'package:client/pages/todo/todo_page.dart';
 import 'package:client/widgets/todo/task_list/task_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -92,12 +93,7 @@ class DefaultShell extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          TaskList(),
-                          TaskList(),
-                        ],
-                      ),
+                      child: TodoPage(),
                     ),
                   ],
                 ),
