@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:client/data/task_data.dart';
 import 'package:client/pages/shells/default_shell.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:tray_manager/tray_manager.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
@@ -21,10 +23,14 @@ void main() async {
   initTrayManager();
 
   runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: DefaultShell(),
+    //later change this to multiprovider
+    ChangeNotifierProvider(
+      create: (context) => TaskProvider(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: DefaultShell(),
+        ),
       ),
     ),
   );
