@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:client/data/task_data.dart';
 import 'package:client/widgets/todo/task_list/task_box.dart';
+import 'package:smooth_list_view/smooth_list_view.dart';
 
 class TaskList extends StatefulWidget {
   final String category;
@@ -39,8 +40,8 @@ class _TaskListState extends State<TaskList> {
               ),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+            child: SmoothListView(
+              duration: Duration(milliseconds: 100),
               children: [
                 Container(
                   height: 64,
@@ -86,6 +87,7 @@ class _TaskListState extends State<TaskList> {
 
   Widget _buildCreateButton(BuildContext context) {
     return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8.0),
       child: TextButton(
         onPressed: () {
           setState(() {

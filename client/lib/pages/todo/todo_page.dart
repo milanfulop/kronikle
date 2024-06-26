@@ -20,17 +20,20 @@ class _TodoPageState extends State<TodoPage> {
       builder: (context, taskProvider, _) {
         List<String> categories = taskProvider.categories;
         return SizedBox(
-          width: screenSize.width - 332,
-          height: screenSize.height,
+          width: screenSize.width - 300,
+          height: screenSize.height - 300,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
+              SizedBox(
+                width: 8,
+              ),
               ...categories
-                  .map((category) => IntrinsicHeight(
-                        child: TaskList(category: category),
-                      ))
+                  .map(
+                    (category) => TaskList(category: category),
+                  )
                   .toList(),
-              SizedBox(height: 56, child: TaskListAdder()),
+              TaskListAdder(),
             ],
           ),
         );
