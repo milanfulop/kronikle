@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:client/utilities/create_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -5,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:client/data/task_data.dart';
 import 'package:client/widgets/todo/task_list/components/task_box.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
+import 'package:window_manager/window_manager.dart';
 
 class TaskList extends StatefulWidget {
   final String category;
@@ -73,11 +76,19 @@ class _TaskListState extends State<TaskList> {
                       widget.widgetId == null
                           ? IconButton(
                               onPressed: () {
-                                createWidget("tasks:${widget.category}");
+                                createWidget(
+                                  const Size(250, 400).toString(),
+                                  "tasks:${widget.category}",
+                                );
                               },
                               icon: const Icon(Icons.do_not_touch),
                             )
-                          : const SizedBox.shrink()
+                          : IconButton(
+                              onPressed: () {
+                                windowManager.close();
+                              },
+                              icon: const Icon(Icons.close),
+                            ),
                     ],
                   ),
                 ),

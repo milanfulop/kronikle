@@ -3,11 +3,16 @@ import 'dart:ui';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 
-Future<void> createWidget(String widgetName) async {
-  final window = await DesktopMultiWindow.createWindow(jsonEncode({
-    'widget_name': widgetName,
-  }));
+Future<void> createWidget(String size, String widgetName) async {
+  final window = await DesktopMultiWindow.createWindow(
+    jsonEncode(
+      {
+        'size': size,
+        'widget_name': widgetName,
+      },
+    ),
+  );
   window
-    ..setFrame(const Offset(0, 0) & const Size(1280, 720))
+    ..setFrame(const Offset(0, 0) & const Size(100, 100))
     ..show();
 }
