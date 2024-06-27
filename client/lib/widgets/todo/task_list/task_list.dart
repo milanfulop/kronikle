@@ -1,14 +1,20 @@
+import 'package:client/utilities/create_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:client/data/task_data.dart';
-import 'package:client/widgets/todo/task_list/task_box.dart';
+import 'package:client/widgets/todo/task_list/components/task_box.dart';
 import 'package:smooth_list_view/smooth_list_view.dart';
 
 class TaskList extends StatefulWidget {
   final String category;
+  final String? widgetId;
 
-  const TaskList({required this.category, Key? key}) : super(key: key);
+  const TaskList({
+    required this.category,
+    this.widgetId,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<TaskList> createState() => _TaskListState();
@@ -52,14 +58,27 @@ class _TaskListState extends State<TaskList> {
                       bottom: BorderSide(color: Colors.black, width: 2),
                     ),
                   ),
-                  child: Center(
-                    child: Text(
-                      widget.category,
-                      style: GoogleFonts.montserrat(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w500,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Center(
+                        child: Text(
+                          widget.category,
+                          style: GoogleFonts.montserrat(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
+                      widget.widgetId == null
+                          ? IconButton(
+                              onPressed: () {
+                                createWidget("tasks:${widget.category}");
+                              },
+                              icon: const Icon(Icons.do_not_touch),
+                            )
+                          : const SizedBox.shrink()
+                    ],
                   ),
                 ),
                 ListView.builder(
