@@ -62,7 +62,7 @@ void main(List<String> args) async {
     await initWindowManager();
     runApp(
       ChangeNotifierProvider(
-        create: (context) => TaskProvider(),
+        create: (context) => taskProvider,
         child: MaterialApp(
           scrollBehavior: MaterialScrollBehavior().copyWith(
             dragDevices: {PointerDeviceKind.mouse},
@@ -136,27 +136,30 @@ Future<void> initTrayManager() async {
 }
 
 Future<void> initLocalServer(TaskProvider taskProvider) async {
-  // Create a Shelf router
   final app = router.Router();
 
-  // Define a POST endpoint to handle '/windowClosed'
-  app.post('/windowClosed', (Request request) async {
-    // Extract the request body as JSON
+  app.post('/windowClosed/todo', (Request request) async {
     final requestBody = await request.readAsString();
     if (requestBody.isNotEmpty) {
       try {
-        // Load state from JSON using TaskProvider instance
-        await taskProvider.loadCategoryState(requestBody, "Work");
+        final data = jsonDecode(requestBody);
+        print(data);
+        final String jsonData = jsonEncode(data['data']);
+        final String category = data['category'];
+        print(jsonData);
+        print(category);
+        await taskProvider.loadCategoryState(jsonData, category);
       } catch (e) {
         print('Error decoding JSON: $e');
+        return Response.internalServerError(body: 'Error decoding JSON');
       }
+    } else {
+      return Response.badRequest(body: 'Request body is empty');
     }
 
-    // Return a response to the client
     return Response.ok('Received data successfully');
   });
 
-  // Start the server on localhost and port 8080
   final server = await io.serve(app, 'localhost', 8080);
   print('Server running on localhost:${server.port}');
 }

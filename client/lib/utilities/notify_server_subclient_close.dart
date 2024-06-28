@@ -1,16 +1,26 @@
-import 'dart:convert';
 import 'dart:io';
+import 'dart:convert';
 
-import 'package:window_manager/window_manager.dart';
-
-void notifyServer(String jsonData) async {
-  print(jsonData);
+void notifyServer(String jsonData, String category) async {
   final HttpClient _client = HttpClient();
   try {
-    final request =
-        await _client.postUrl(Uri.parse('http://localhost:8080/windowClosed'));
+    final request = await _client
+        .postUrl(Uri.parse('http://localhost:8080/windowClosed/todo'));
     request.headers.contentType = ContentType.json;
-    request.write(jsonData);
+
+    final decodedData = jsonDecode(jsonData);
+    if (decodedData is Map<String, dynamic>) {
+      decodedData['category'] = category;
+      final combinedJsonData = jsonEncode(decodedData);
+      request.write(combinedJsonData);
+    } else if (decodedData is List) {
+      final wrappedData = {'data': decodedData, 'category': category};
+      final combinedJsonData = jsonEncode(wrappedData);
+      request.write(combinedJsonData);
+    } else {
+      throw FormatException('Expected JSON object or array');
+    }
+
     final response = await request.close();
 
     if (response.statusCode == HttpStatus.ok) {
@@ -21,6 +31,4 @@ void notifyServer(String jsonData) async {
   } catch (e) {
     print('Error sending notification: $e');
   }
-
-  windowManager.close();
 }

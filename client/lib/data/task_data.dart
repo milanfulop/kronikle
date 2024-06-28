@@ -100,21 +100,13 @@ class TaskProvider extends ChangeNotifier {
 
     if (jsonString != null) {
       Map<String, dynamic> jsonTaskLists = jsonDecode(jsonString);
-      print("jsontasklists: $jsonTaskLists");
-      // Update only the specified category
       if (jsonTaskLists.containsKey(category)) {
-        print("contains key");
         List<Task> tasks = (jsonDecode(taskJson) as List)
             .map((taskJson) => Task.fromJson(taskJson))
             .toList();
-        print("tasks: $tasks");
         _taskLists[category] = tasks;
-        print(_taskLists);
         notifyListeners();
-        print("done notifying");
       }
     }
-
-    print(_taskLists);
   }
 }

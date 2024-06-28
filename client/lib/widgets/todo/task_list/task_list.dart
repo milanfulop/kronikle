@@ -83,8 +83,8 @@ class _TaskListState extends State<TaskList> {
                           alignment: Alignment.centerRight,
                           child: widget.widgetId == null
                               ? IconButton(
-                                  onPressed: () {
-                                    createWidget(
+                                  onPressed: () async {
+                                    await createWidget(
                                       const Size(250, 400).toString(),
                                       "tasks:${widget.category}",
                                     );
@@ -93,9 +93,7 @@ class _TaskListState extends State<TaskList> {
                                 )
                               : IconButton(
                                   onPressed: () async {
-                                    notifyServer(
-                                      jsonEncode(tasks),
-                                    );
+                                    windowManager.close();
                                   },
                                   icon: const Icon(Icons.close),
                                 ),
@@ -115,9 +113,11 @@ class _TaskListState extends State<TaskList> {
                   },
                 ),
                 SizedBox(height: 8),
-                _isCreatingTask
-                    ? _buildNewTaskTextField(context)
-                    : _buildCreateButton(context),
+                widget.widgetId != null
+                    ? _isCreatingTask
+                        ? _buildNewTaskTextField(context)
+                        : _buildCreateButton(context)
+                    : const SizedBox.shrink(),
                 SizedBox(height: 8),
               ],
             ),
@@ -210,10 +210,15 @@ class _TaskListState extends State<TaskList> {
   }
 
   void _createNewTask(BuildContext context, String taskName) {
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+    List<Task> tasks = taskProvider.tasksInCategory(widget.category);
     if (taskName.isNotEmpty) {
       Task newTask = Task(name: taskName);
-      Provider.of<TaskProvider>(context, listen: false)
-          .addTask(widget.category, newTask);
+      taskProvider.addTask(widget.category, newTask);
+      notifyServer(
+        jsonEncode(tasks),
+        widget.category,
+      );
     }
     _newTaskController.clear();
     setState(() {
