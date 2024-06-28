@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:client/utilities/create_widget.dart';
 import 'package:client/utilities/notify_server_subclient_close.dart';
 import 'package:flutter/material.dart';
@@ -51,77 +49,83 @@ class _TaskListState extends State<TaskList> {
               ),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: SmoothListView(
-              duration: const Duration(milliseconds: 100),
-              children: [
-                Container(
-                  height: 64,
-                  width: double.maxFinite,
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 217, 217, 217),
-                    border: Border(
-                      bottom: BorderSide(color: Colors.black, width: 2),
-                    ),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(8),
-                      topRight: Radius.circular(8),
-                    ),
-                  ),
-                  child: DragToMoveArea(
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: Text(
-                            widget.category,
-                            style: GoogleFonts.montserrat(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w500,
-                            ),
+            child: taskProvider.isCategoryHidden(widget.category) == true
+                ? Container(
+                    color: Colors.black,
+                  )
+                : SmoothListView(
+                    duration: const Duration(milliseconds: 100),
+                    children: [
+                      Container(
+                        height: 64,
+                        width: double.maxFinite,
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 217, 217, 217),
+                          border: Border(
+                            bottom: BorderSide(color: Colors.black, width: 2),
+                          ),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(8),
+                            topRight: Radius.circular(8),
                           ),
                         ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: widget.widgetId == null
-                              ? IconButton(
-                                  onPressed: () async {
-                                    await createWidget(
-                                      const Size(250, 400).toString(),
-                                      "tasks:${widget.category}",
-                                    );
-                                  },
-                                  icon: const Icon(Icons.do_not_touch),
-                                )
-                              : IconButton(
-                                  onPressed: () async {
-                                    windowManager.close();
-                                  },
-                                  icon: const Icon(Icons.close),
+                        child: DragToMoveArea(
+                          child: Stack(
+                            children: [
+                              Center(
+                                child: Text(
+                                  widget.category,
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
+                              ),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: widget.widgetId == null
+                                    ? IconButton(
+                                        onPressed: () async {
+                                          await createWidget(
+                                            const Size(250, 400).toString(),
+                                            "tasks:${widget.category}",
+                                          );
+                                          taskProvider.toggleCategoryHidden(
+                                              widget.category);
+                                        },
+                                        icon: const Icon(Icons.do_not_touch),
+                                      )
+                                    : IconButton(
+                                        onPressed: () async {
+                                          await notifyServer(
+                                            widget.category,
+                                          );
+                                          windowManager.close();
+                                        },
+                                        icon: const Icon(Icons.close),
+                                      ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
+                      ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: tasks.length,
+                        itemBuilder: (context, index) {
+                          Task task = tasks[index];
+                          return TaskBox(
+                            task: task,
+                          );
+                        },
+                      ),
+                      SizedBox(height: 8),
+                      _isCreatingTask
+                          ? _buildNewTaskTextField(context)
+                          : _buildCreateButton(context),
+                      SizedBox(height: 8),
+                    ],
                   ),
-                ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: tasks.length,
-                  itemBuilder: (context, index) {
-                    Task task = tasks[index];
-                    print("rerender");
-                    return TaskBox(
-                      task: task,
-                    );
-                  },
-                ),
-                SizedBox(height: 8),
-                widget.widgetId != null
-                    ? _isCreatingTask
-                        ? _buildNewTaskTextField(context)
-                        : _buildCreateButton(context)
-                    : const SizedBox.shrink(),
-                SizedBox(height: 8),
-              ],
-            ),
           ),
         );
       },
@@ -212,14 +216,9 @@ class _TaskListState extends State<TaskList> {
 
   void _createNewTask(BuildContext context, String taskName) {
     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
-    List<Task> tasks = taskProvider.tasksInCategory(widget.category);
     if (taskName.isNotEmpty) {
       Task newTask = Task(name: taskName, category: widget.category);
       taskProvider.addTask(widget.category, newTask);
-      notifyServer(
-        jsonEncode(tasks),
-        widget.category,
-      );
     }
     _newTaskController.clear();
     setState(() {

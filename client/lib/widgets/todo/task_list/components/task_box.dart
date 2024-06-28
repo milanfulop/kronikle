@@ -54,16 +54,10 @@ class _TaskBoxState extends State<TaskBox> {
                   onChanged: (value) {
                     final taskProvider =
                         Provider.of<TaskProvider>(context, listen: false);
-                    List<Task> tasks =
-                        taskProvider.tasksInCategory(widget.task.category);
                     taskProvider.updateTask(
                       widget.task,
                       newName: widget.task.name,
                       newCompleted: value,
-                    );
-                    notifyServer(
-                      jsonEncode(tasks),
-                      widget.task.category,
                     );
                     setState(() {
                       _isChecked = value!;

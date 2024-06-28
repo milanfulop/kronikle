@@ -142,13 +142,8 @@ Future<void> initLocalServer(TaskProvider taskProvider) async {
     final requestBody = await request.readAsString();
     if (requestBody.isNotEmpty) {
       try {
-        final data = jsonDecode(requestBody);
-        print(data);
-        final String jsonData = jsonEncode(data['data']);
-        final String category = data['category'];
-        print(jsonData);
-        print(category);
-        await taskProvider.loadCategoryState(jsonData, category);
+        final category = jsonDecode(requestBody);
+        taskProvider.toggleCategoryHidden(category);
       } catch (e) {
         print('Error decoding JSON: $e');
         return Response.internalServerError(body: 'Error decoding JSON');

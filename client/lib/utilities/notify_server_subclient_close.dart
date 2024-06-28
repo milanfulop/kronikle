@@ -1,25 +1,16 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
-void notifyServer(String jsonData, String category) async {
+Future<void> notifyServer(String category) async {
   final HttpClient _client = HttpClient();
   try {
     final request = await _client
         .postUrl(Uri.parse('http://localhost:8080/windowClosed/todo'));
     request.headers.contentType = ContentType.json;
 
-    final decodedData = jsonDecode(jsonData);
-    if (decodedData is Map<String, dynamic>) {
-      decodedData['category'] = category;
-      final combinedJsonData = jsonEncode(decodedData);
-      request.write(combinedJsonData);
-    } else if (decodedData is List) {
-      final wrappedData = {'data': decodedData, 'category': category};
-      final combinedJsonData = jsonEncode(wrappedData);
-      request.write(combinedJsonData);
-    } else {
-      throw FormatException('Expected JSON object or array');
-    }
+    request.write(
+      jsonEncode(category),
+    );
 
     final response = await request.close();
 
