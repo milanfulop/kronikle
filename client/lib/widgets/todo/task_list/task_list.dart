@@ -1,7 +1,7 @@
-import 'dart:io';
+import 'dart:convert';
 
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:client/utilities/create_widget.dart';
+import 'package:client/utilities/notify_server_subclient_close.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -92,8 +92,10 @@ class _TaskListState extends State<TaskList> {
                                   icon: const Icon(Icons.do_not_touch),
                                 )
                               : IconButton(
-                                  onPressed: () {
-                                    windowManager.close();
+                                  onPressed: () async {
+                                    notifyServer(
+                                      jsonEncode(tasks),
+                                    );
                                   },
                                   icon: const Icon(Icons.close),
                                 ),

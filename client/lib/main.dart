@@ -14,6 +14,10 @@ import 'package:provider/provider.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 
+import 'package:shelf/shelf.dart';
+import 'package:shelf/shelf_io.dart' as io;
+import 'package:shelf_router/shelf_router.dart' as router;
+
 // Firebase
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -22,7 +26,6 @@ void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Window.initialize();
-
   if (args.isNotEmpty && args[0] == 'multi_window') {
     final windowId = int.parse(args[1]);
     final argument = args[2].isEmpty
@@ -52,6 +55,8 @@ void main(List<String> args) async {
       ),
     );
   } else {
+    final taskProvider = TaskProvider();
+    await initLocalServer(taskProvider);
     await initFirebase();
     await initTrayManager();
     await initWindowManager();
@@ -128,4 +133,30 @@ Future<void> initTrayManager() async {
     ],
   );
   await trayManager.setContextMenu(menu);
+}
+
+Future<void> initLocalServer(TaskProvider taskProvider) async {
+  // Create a Shelf router
+  final app = router.Router();
+
+  // Define a POST endpoint to handle '/windowClosed'
+  app.post('/windowClosed', (Request request) async {
+    // Extract the request body as JSON
+    final requestBody = await request.readAsString();
+    if (requestBody.isNotEmpty) {
+      try {
+        // Load state from JSON using TaskProvider instance
+        await taskProvider.loadCategoryState(requestBody, "Work");
+      } catch (e) {
+        print('Error decoding JSON: $e');
+      }
+    }
+
+    // Return a response to the client
+    return Response.ok('Received data successfully');
+  });
+
+  // Start the server on localhost and port 8080
+  final server = await io.serve(app, 'localhost', 8080);
+  print('Server running on localhost:${server.port}');
 }
