@@ -107,6 +107,7 @@ class _TaskListState extends State<TaskList> {
                   itemCount: tasks.length,
                   itemBuilder: (context, index) {
                     Task task = tasks[index];
+                    print("rerender");
                     return TaskBox(
                       task: task,
                     );
@@ -213,7 +214,7 @@ class _TaskListState extends State<TaskList> {
     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
     List<Task> tasks = taskProvider.tasksInCategory(widget.category);
     if (taskName.isNotEmpty) {
-      Task newTask = Task(name: taskName);
+      Task newTask = Task(name: taskName, category: widget.category);
       taskProvider.addTask(widget.category, newTask);
       notifyServer(
         jsonEncode(tasks),

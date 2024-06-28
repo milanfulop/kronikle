@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:client/data/task_data.dart';
+import 'package:client/utilities/notify_server_subclient_close.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class TaskBox extends StatefulWidget {
   const TaskBox({
@@ -17,13 +21,8 @@ class _TaskBoxState extends State<TaskBox> {
   bool _isChecked = false;
 
   @override
-  void initState() {
-    _isChecked = widget.task.completed;
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    _isChecked = widget.task.completed;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -53,6 +52,19 @@ class _TaskBoxState extends State<TaskBox> {
                 Checkbox(
                   value: _isChecked,
                   onChanged: (value) {
+                    final taskProvider =
+                        Provider.of<TaskProvider>(context, listen: false);
+                    List<Task> tasks =
+                        taskProvider.tasksInCategory(widget.task.category);
+                    taskProvider.updateTask(
+                      widget.task,
+                      newName: widget.task.name,
+                      newCompleted: value,
+                    );
+                    notifyServer(
+                      jsonEncode(tasks),
+                      widget.task.category,
+                    );
                     setState(() {
                       _isChecked = value!;
                     });

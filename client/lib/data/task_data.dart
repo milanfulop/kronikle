@@ -5,17 +5,24 @@ import 'dart:convert';
 class Task {
   String name;
   bool completed;
+  String category;
 
-  Task({required this.name, this.completed = false});
+  Task({
+    required this.name,
+    this.completed = false,
+    required this.category,
+  });
 
   Map<String, dynamic> toJson() => {
         'name': name,
         'completed': completed,
+        'category': category,
       };
 
   static Task fromJson(Map<String, dynamic> json) => Task(
         name: json['name'],
         completed: json['completed'],
+        category: json['category'],
       );
 }
 
@@ -55,18 +62,45 @@ class TaskProvider extends ChangeNotifier {
     saveState();
   }
 
-  void updateTask(String category, Task task,
-      {String? newName, bool? newCompleted}) {
-    task.name = newName ?? task.name;
-    task.completed = newCompleted ?? task.completed;
-    notifyListeners();
-    saveState();
+  void updateTask(Task task, {String? newName, bool? newCompleted}) {
+    bool taskUpdated = false;
+
+    for (var category in _taskLists.keys) {
+      for (var t in _taskLists[category]!) {
+        if (t.name == task.name && t.completed == task.completed) {
+          t.name = newName ?? t.name;
+          t.completed = newCompleted ?? t.completed;
+          taskUpdated = true;
+          break;
+        }
+      }
+      if (taskUpdated) break;
+    }
+
+    if (taskUpdated) {
+      notifyListeners();
+      saveState();
+    }
   }
 
-  void toggleTaskCompletion(String category, Task task) {
-    task.completed = !task.completed;
-    notifyListeners();
-    saveState();
+  void toggleTaskCompletion(Task task) {
+    bool taskUpdated = false;
+
+    for (var category in _taskLists.keys) {
+      for (var t in _taskLists[category]!) {
+        if (t.name == task.name && t.completed == task.completed) {
+          t.completed = !t.completed;
+          taskUpdated = true;
+          break;
+        }
+      }
+      if (taskUpdated) break;
+    }
+
+    if (taskUpdated) {
+      notifyListeners();
+      saveState();
+    }
   }
 
   Future<void> saveState() async {
