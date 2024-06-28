@@ -8,6 +8,7 @@ import 'package:client/pages/shells/widget_shell.dart';
 import 'package:client/utilities/parse_size.dart';
 import 'package:client/widgets/todo/task_list/task_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:provider/provider.dart';
 
 import 'package:tray_manager/tray_manager.dart';
@@ -19,6 +20,8 @@ import 'firebase_options.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Window.initialize();
 
   if (args.isNotEmpty && args[0] == 'multi_window') {
     final windowId = int.parse(args[1]);

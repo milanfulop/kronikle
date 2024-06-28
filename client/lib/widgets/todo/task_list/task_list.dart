@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:client/utilities/create_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -43,6 +44,7 @@ class _TaskListState extends State<TaskList> {
           child: Container(
             width: 250,
             decoration: BoxDecoration(
+              color: Colors.white,
               border: Border.all(
                 color: Colors.black,
                 width: 2,
@@ -50,46 +52,54 @@ class _TaskListState extends State<TaskList> {
               borderRadius: BorderRadius.circular(8),
             ),
             child: SmoothListView(
-              duration: Duration(milliseconds: 100),
+              duration: const Duration(milliseconds: 100),
               children: [
                 Container(
                   height: 64,
                   width: double.maxFinite,
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(100, 217, 217, 217),
+                    color: Color.fromARGB(255, 217, 217, 217),
                     border: Border(
                       bottom: BorderSide(color: Colors.black, width: 2),
                     ),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
+                    ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Center(
-                        child: Text(
-                          widget.category,
-                          style: GoogleFonts.montserrat(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w500,
+                  child: DragToMoveArea(
+                    child: Stack(
+                      children: [
+                        Center(
+                          child: Text(
+                            widget.category,
+                            style: GoogleFonts.montserrat(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                      ),
-                      widget.widgetId == null
-                          ? IconButton(
-                              onPressed: () {
-                                createWidget(
-                                  const Size(250, 400).toString(),
-                                  "tasks:${widget.category}",
-                                );
-                              },
-                              icon: const Icon(Icons.do_not_touch),
-                            )
-                          : IconButton(
-                              onPressed: () {
-                                windowManager.close();
-                              },
-                              icon: const Icon(Icons.close),
-                            ),
-                    ],
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: widget.widgetId == null
+                              ? IconButton(
+                                  onPressed: () {
+                                    createWidget(
+                                      const Size(250, 400).toString(),
+                                      "tasks:${widget.category}",
+                                    );
+                                  },
+                                  icon: const Icon(Icons.do_not_touch),
+                                )
+                              : IconButton(
+                                  onPressed: () {
+                                    windowManager.close();
+                                  },
+                                  icon: const Icon(Icons.close),
+                                ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 ListView.builder(

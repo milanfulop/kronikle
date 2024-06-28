@@ -13,6 +13,6 @@ Future<void> createWidget(String size, String widgetName) async {
     ),
   );
   window
-    ..setFrame(const Offset(0, 0) & const Size(100, 100))
+    ..setFrame(const Offset(500, 500) & const Size(100, 100))
     ..show();
 }
