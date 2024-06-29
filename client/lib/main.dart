@@ -142,8 +142,16 @@ Future<void> initLocalServer(TaskProvider taskProvider) async {
     final requestBody = await request.readAsString();
     if (requestBody.isNotEmpty) {
       try {
-        final category = jsonDecode(requestBody);
-        taskProvider.toggleCategoryHidden(category);
+        final data = jsonDecode(requestBody);
+        final category = data['category'];
+        final categoryState = data['categoryState'];
+
+        if (category != null && categoryState != null) {
+          taskProvider.toggleCategoryHidden(category);
+          await taskProvider.loadCategoryState(categoryState, category);
+        } else {
+          return Response.badRequest(body: 'Invalid data structure');
+        }
       } catch (e) {
         print('Error decoding JSON: $e');
         return Response.internalServerError(body: 'Error decoding JSON');

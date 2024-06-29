@@ -32,13 +32,12 @@ class TaskProvider extends ChangeNotifier {
     'Work': [],
   };
 
-  Map<String, bool> _categoryHidden = {
-    'General': false,
-    'Work': false,
-  };
+  Map<String, bool> _categoryHidden = {};
 
   TaskProvider() {
-    loadState();
+    loadState().then((_) {
+      initializeCategoryHidden();
+    });
   }
 
   List<String> get categories => _taskLists.keys.toList();
@@ -56,13 +55,21 @@ class TaskProvider extends ChangeNotifier {
       _categoryHidden[category] = !_categoryHidden[category]!;
       notifyListeners();
     }
-    print(_categoryHidden[category]);
   }
 
-  void addTask(String category, Task task) {
+  void initializeCategoryHidden() {
+    for (var category in _taskLists.keys) {
+      if (!_categoryHidden.containsKey(category)) {
+        _categoryHidden[category] = false;
+      }
+    }
+    notifyListeners();
+  }
+
+  void addTask(String category, Task task) async {
     _taskLists[category]?.add(task);
     notifyListeners();
-    saveState();
+    await saveState();
   }
 
   void addTaskList(String category) {

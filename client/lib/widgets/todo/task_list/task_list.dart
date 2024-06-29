@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:client/utilities/create_widget.dart';
 import 'package:client/utilities/notify_server_subclient_close.dart';
 import 'package:flutter/material.dart';
@@ -99,6 +101,7 @@ class _TaskListState extends State<TaskList> {
                                         onPressed: () async {
                                           await notifyServer(
                                             widget.category,
+                                            jsonEncode(tasks),
                                           );
                                           windowManager.close();
                                         },
