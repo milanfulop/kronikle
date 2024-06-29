@@ -57,7 +57,7 @@ void main(List<String> args) async {
   } else {
     final taskProvider = TaskProvider();
     await initLocalServer(taskProvider);
-    await initFirebase();
+    // await initFirebase();
     await initTrayManager();
     await initWindowManager();
     runApp(

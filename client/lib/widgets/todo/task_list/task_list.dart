@@ -55,83 +55,95 @@ class _TaskListState extends State<TaskList> {
                 ? Container(
                     color: Colors.black,
                   )
-                : SmoothListView(
-                    duration: const Duration(milliseconds: 100),
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Container(
-                        height: 64,
-                        width: double.maxFinite,
-                        decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 217, 217, 217),
-                          border: Border(
-                            bottom: BorderSide(color: Colors.black, width: 2),
-                          ),
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(8),
-                            topRight: Radius.circular(8),
-                          ),
-                        ),
-                        child: DragToMoveArea(
-                          child: Stack(
-                            children: [
-                              Center(
-                                child: Text(
-                                  widget.category,
-                                  style: GoogleFonts.montserrat(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: widget.widgetId == null
-                                    ? IconButton(
-                                        onPressed: () async {
-                                          await createWidget(
-                                            const Size(250, 400).toString(),
-                                            "tasks:${widget.category}",
-                                          );
-                                          taskProvider.toggleCategoryHidden(
-                                              widget.category);
-                                        },
-                                        icon: const Icon(Icons.do_not_touch),
-                                      )
-                                    : IconButton(
-                                        onPressed: () async {
-                                          await notifyServer(
-                                            widget.category,
-                                            jsonEncode(tasks),
-                                          );
-                                          windowManager.close();
-                                        },
-                                        icon: const Icon(Icons.close),
-                                      ),
-                              ),
-                            ],
-                          ),
+                      _buildHeader(context, tasks, taskProvider),
+                      Expanded(
+                        child: SmoothListView(
+                          duration: const Duration(milliseconds: 100),
+                          children: [
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: tasks.length,
+                              itemBuilder: (context, index) {
+                                Task task = tasks[index];
+                                return TaskBox(
+                                  task: task,
+                                  widgetId: widget.widgetId,
+                                );
+                              },
+                            ),
+                            SizedBox(height: 8),
+                            _isCreatingTask
+                                ? _buildNewTaskTextField(context)
+                                : _buildCreateButton(context),
+                            SizedBox(height: 8),
+                          ],
                         ),
                       ),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: tasks.length,
-                        itemBuilder: (context, index) {
-                          Task task = tasks[index];
-                          return TaskBox(
-                            task: task,
-                          );
-                        },
-                      ),
-                      SizedBox(height: 8),
-                      _isCreatingTask
-                          ? _buildNewTaskTextField(context)
-                          : _buildCreateButton(context),
-                      SizedBox(height: 8),
                     ],
                   ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildHeader(
+      BuildContext context, List<Task> tasks, TaskProvider taskProvider) {
+    return Container(
+      height: 64,
+      decoration: BoxDecoration(
+        color: Color.fromARGB(255, 217, 217, 217),
+        border: Border(
+          bottom: BorderSide(color: Colors.black, width: 2),
+        ),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(8),
+          topRight: Radius.circular(8),
+        ),
+      ),
+      child: DragToMoveArea(
+        child: Stack(
+          children: [
+            Center(
+              child: Text(
+                widget.category,
+                style: GoogleFonts.montserrat(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: widget.widgetId == null
+                  ? IconButton(
+                      onPressed: () async {
+                        await createWidget(
+                          const Size(250, 400).toString(),
+                          "tasks:${widget.category}",
+                        );
+                        taskProvider.toggleCategoryHidden(widget.category);
+                      },
+                      icon: const Icon(Icons.do_not_touch),
+                    )
+                  : IconButton(
+                      onPressed: () async {
+                        await notifyServer(
+                          widget.category,
+                          jsonEncode(tasks),
+                        );
+                        windowManager.close();
+                      },
+                      icon: const Icon(Icons.close),
+                    ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
