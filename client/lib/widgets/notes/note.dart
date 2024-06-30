@@ -23,13 +23,7 @@ class NoteWidget extends StatefulWidget {
 }
 
 class _NoteWidgetState extends State<NoteWidget> {
-  TextEditingController _noteController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _noteController.text = widget.note.text;
-  }
+  final TextEditingController _noteController = TextEditingController();
 
   @override
   void dispose() {
@@ -39,6 +33,7 @@ class _NoteWidgetState extends State<NoteWidget> {
 
   @override
   Widget build(BuildContext context) {
+    _noteController.text = widget.note.text;
     return Consumer<NoteProvider>(
       builder: (context, noteProvider, _) {
         return Padding(
@@ -53,31 +48,36 @@ class _NoteWidgetState extends State<NoteWidget> {
               ),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildHeader(context, widget.note, noteProvider),
-                Expanded(
-                  child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextField(
-                        controller: _noteController,
-                        onChanged: (value) {
-                          noteProvider.updateNote(widget.note, newText: value);
-                        },
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        style: GoogleFonts.montserrat(
-                          fontSize: 16,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: 'Enter note text',
-                          border: InputBorder.none,
-                        ),
-                      )),
-                ),
-              ],
-            ),
+            child: noteProvider.isNoteHidden(widget.note.name) == true
+                ? Container(
+                    color: Colors.black,
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildHeader(context, widget.note, noteProvider),
+                      Expanded(
+                        child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              controller: _noteController,
+                              onChanged: (value) {
+                                noteProvider.updateNote(widget.note,
+                                    newText: value);
+                              },
+                              maxLines: null,
+                              keyboardType: TextInputType.multiline,
+                              style: GoogleFonts.montserrat(
+                                fontSize: 16,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'Enter note text',
+                                border: InputBorder.none,
+                              ),
+                            )),
+                      ),
+                    ],
+                  ),
           ),
         );
       },
@@ -115,6 +115,7 @@ class _NoteWidgetState extends State<NoteWidget> {
               child: widget.widgetId == null
                   ? IconButton(
                       onPressed: () async {
+                        noteProvider.toggleNoteHidden(widget.note.name);
                         await createWidget(
                           const Size(250, 400).toString(),
                           "note:${widget.note.name}",
@@ -126,7 +127,7 @@ class _NoteWidgetState extends State<NoteWidget> {
                       onPressed: () async {
                         await notifyServerNote(
                           widget.note.name,
-                          jsonEncode(widget.note.text),
+                          jsonEncode(_noteController.text),
                         );
                         windowManager.close();
                       },

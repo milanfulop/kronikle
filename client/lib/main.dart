@@ -66,15 +66,16 @@ void main(List<String> args) async {
     );
   } else {
     final taskProvider = TaskProvider();
-    await initLocalServer(taskProvider);
+    final noteProvider = NoteProvider();
+    await initLocalServer(taskProvider, noteProvider);
     // await initFirebase();
     await initTrayManager();
     await initWindowManager();
     runApp(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => TaskProvider()),
-          ChangeNotifierProvider(create: (context) => NoteProvider()),
+          ChangeNotifierProvider(create: (context) => taskProvider),
+          ChangeNotifierProvider(create: (context) => noteProvider),
         ],
         child: MaterialApp(
           scrollBehavior: MaterialScrollBehavior().copyWith(
@@ -154,7 +155,10 @@ Future<void> initTrayManager() async {
   await trayManager.setContextMenu(menu);
 }
 
-Future<void> initLocalServer(TaskProvider taskProvider) async {
+Future<void> initLocalServer(
+  TaskProvider taskProvider,
+  NoteProvider noteProvider,
+) async {
   final app = router.Router();
 
   app.post('/windowClosed/todo', (Request request) async {
@@ -168,6 +172,31 @@ Future<void> initLocalServer(TaskProvider taskProvider) async {
         if (category != null && categoryState != null) {
           taskProvider.toggleCategoryHidden(category);
           await taskProvider.loadCategoryState(categoryState, category);
+        } else {
+          return Response.badRequest(body: 'Invalid data structure');
+        }
+      } catch (e) {
+        print('Error decoding JSON: $e');
+        return Response.internalServerError(body: 'Error decoding JSON');
+      }
+    } else {
+      return Response.badRequest(body: 'Request body is empty');
+    }
+
+    return Response.ok('Received data successfully');
+  });
+
+  app.post('/windowClosed/note', (Request request) async {
+    final requestBody = await request.readAsString();
+    if (requestBody.isNotEmpty) {
+      try {
+        final data = jsonDecode(requestBody);
+        final name = data['name'];
+        final noteState = data['noteState'];
+
+        if (name != null && noteState != null) {
+          noteProvider.toggleNoteHidden(name);
+          await noteProvider.loadNoteState(noteState, name);
         } else {
           return Response.badRequest(body: 'Invalid data structure');
         }
