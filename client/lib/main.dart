@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:client/data/note_data.dart';
 import 'package:client/data/task_data.dart';
 import 'package:client/pages/shells/default_shell.dart';
 import 'package:client/pages/shells/widget_shell.dart';
@@ -61,8 +62,11 @@ void main(List<String> args) async {
     await initTrayManager();
     await initWindowManager();
     runApp(
-      ChangeNotifierProvider(
-        create: (context) => taskProvider,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => TaskProvider()),
+          ChangeNotifierProvider(create: (context) => NoteProvider()),
+        ],
         child: MaterialApp(
           scrollBehavior: MaterialScrollBehavior().copyWith(
             dragDevices: {PointerDeviceKind.mouse},

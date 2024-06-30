@@ -1,11 +1,34 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
-import 'package:client/components/left_drawer_button/left_drawer_button.dart';
+import 'package:client/pages/notes/notes_page.dart';
+import 'package:client/pages/shells/left_drawer_button/left_drawer_button.dart';
 import 'package:client/pages/todo/todo_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class DefaultShell extends StatelessWidget {
+class DefaultShell extends StatefulWidget {
   const DefaultShell({super.key});
+
+  @override
+  State<DefaultShell> createState() => _DefaultShellState();
+}
+
+class _DefaultShellState extends State<DefaultShell> {
+  String currentPage = "todo";
+
+  final Map<String, Widget> pageMapping = {
+    "todo": const TodoPage(),
+    "notes": const NotesPage(),
+    // "dailyGoals": DailyGoalsPage(),
+    // "pomodoro": PomodoroPage(),
+    // "reminders": RemindersPage(),
+    // "settings": SettingsPage(),
+  };
+
+  void changePage(String page) {
+    setState(() {
+      currentPage = page;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,45 +76,41 @@ class DefaultShell extends StatelessWidget {
                           ),
                           LeftDrawerButton(
                             text: "Tasks",
-                            icon: Icon(
-                              Icons.work_outline,
-                            ),
+                            icon: Icon(Icons.work_outline),
+                            onPressed: () => changePage("todo"),
                           ),
                           LeftDrawerButton(
                             text: "Notes",
-                            icon: Icon(
-                              Icons.newspaper_outlined,
-                            ),
+                            icon: Icon(Icons.newspaper_outlined),
+                            onPressed: () => changePage("notes"),
                           ),
                           LeftDrawerButton(
                             text: "Daily goals",
-                            icon: Icon(
-                              Icons.wb_sunny_outlined,
-                            ),
+                            icon: Icon(Icons.wb_sunny_outlined),
+                            onPressed: () => changePage("dailyGoals"),
                           ),
                           LeftDrawerButton(
                             text: "Pomodoro",
-                            icon: Icon(
-                              Icons.hourglass_bottom_outlined,
-                            ),
+                            icon: Icon(Icons.hourglass_bottom_outlined),
+                            onPressed: () => changePage("pomodoro"),
                           ),
                           LeftDrawerButton(
                             text: "Reminders",
-                            icon: Icon(
-                              Icons.alarm,
-                            ),
+                            icon: Icon(Icons.alarm),
+                            onPressed: () => changePage("reminders"),
                           ),
                           Spacer(),
                           LeftDrawerButton(
                             text: "Settings",
-                            icon: Icon(
-                              Icons.settings_outlined,
-                            ),
+                            icon: Icon(Icons.settings_outlined),
+                            onPressed: () => changePage("settings"),
                           ),
                         ],
                       ),
                     ),
-                    TodoPage(),
+                    Expanded(
+                      child: pageMapping[currentPage] ?? Container(),
+                    ),
                   ],
                 ),
               ),
