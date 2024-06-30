@@ -7,6 +7,7 @@ import 'package:client/data/task_data.dart';
 import 'package:client/pages/shells/default_shell.dart';
 import 'package:client/pages/shells/widget_shell.dart';
 import 'package:client/utilities/parse_size.dart';
+import 'package:client/widgets/notes/note.dart';
 import 'package:client/widgets/todo/task_list/task_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
@@ -33,16 +34,24 @@ void main(List<String> args) async {
         ? const {}
         : jsonDecode(args[2]) as Map<String, dynamic>;
 
+    final noteProvider = NoteProvider();
+
+    await noteProvider.loadState();
+
     final widgetData = getDataForWidget(
       argument['widget_name'],
+      noteProvider,
     );
 
     final widgetBuilder = widgetData['widget'] as Widget;
     final windowSize = parseSize(argument['size']);
 
     runApp(
-      ChangeNotifierProvider(
-        create: (context) => TaskProvider(),
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => TaskProvider()),
+          ChangeNotifierProvider(create: (context) => noteProvider),
+        ],
         child: MaterialApp(
           scrollBehavior: MaterialScrollBehavior().copyWith(
             dragDevices: {PointerDeviceKind.mouse},
@@ -81,13 +90,19 @@ void main(List<String> args) async {
   }
 }
 
-Map<String, dynamic> getDataForWidget(String widgetId) {
+Map<String, dynamic> getDataForWidget(
+  String widgetId,
+  NoteProvider noteProvider,
+) {
   final splitWidget = widgetId.split(':');
   final widgetKey = splitWidget.first;
   final widgetArg1 = splitWidget[1];
 
   final widgetMap = <String, Widget Function()>{
-    'note': () => Text("dxxd"),
+    'note': () => NoteWidget(
+          note: noteProvider.getNoteByName(widgetArg1),
+          widgetId: widgetId,
+        ),
     'tasks': () => TaskList(
           widgetId: widgetId,
           category: widgetArg1,

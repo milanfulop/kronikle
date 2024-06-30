@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:client/data/note_data.dart';
+import 'package:client/utilities/create_widget.dart';
+import 'package:client/utilities/notify_server_subclient_close.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -111,13 +115,20 @@ class _NoteWidgetState extends State<NoteWidget> {
               child: widget.widgetId == null
                   ? IconButton(
                       onPressed: () async {
-                        // Implement your logic here
+                        await createWidget(
+                          const Size(250, 400).toString(),
+                          "note:${widget.note.name}",
+                        );
                       },
                       icon: const Icon(Icons.do_not_touch),
                     )
                   : IconButton(
                       onPressed: () async {
-                        // Implement your logic here
+                        await notifyServerNote(
+                          widget.note.name,
+                          jsonEncode(widget.note.text),
+                        );
+                        windowManager.close();
                       },
                       icon: const Icon(Icons.close),
                     ),

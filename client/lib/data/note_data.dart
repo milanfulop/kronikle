@@ -32,6 +32,10 @@ class NoteProvider extends ChangeNotifier {
   List<Note> get notes => _notes;
 
   void addNote(Note note) async {
+    if (_notes.any((existingNote) => existingNote.name == note.name)) {
+      throw Exception('Note name "${note.name}" must be unique.');
+    }
+
     _notes.add(note);
     notifyListeners();
     await saveState();
@@ -44,21 +48,34 @@ class NoteProvider extends ChangeNotifier {
   }
 
   void updateNote(Note oldNote, {String? newName, String? newText}) {
-    bool noteUpdated = false;
-
-    for (var n in _notes) {
-      if (n.name == oldNote.name && n.text == oldNote.text) {
-        n.name = newName ?? n.name;
-        n.text = newText ?? n.text;
-        noteUpdated = true;
-        break;
-      }
+    if (newName != null &&
+        newName != oldNote.name &&
+        _notes.any((existingNote) => existingNote.name == newName)) {
+      throw Exception('Note name "$newName" must be unique.');
     }
 
-    if (noteUpdated) {
-      notifyListeners();
-      saveState();
+    Note updatedNote = _notes.firstWhere((note) => note.name == oldNote.name);
+    updatedNote.name = newName ?? oldNote.name;
+    updatedNote.text = newText ?? oldNote.text;
+
+    if (newName != null && newName != oldNote.name) {
+      _notes.removeWhere((note) => note.name == oldNote.name);
+      _notes.add(updatedNote);
     }
+
+    notifyListeners();
+    saveState();
+  }
+
+  Note getNoteByName(String name) {
+    print(_notes);
+    return _notes.firstWhere(
+      (note) => note.name == name,
+      orElse: () => Note(
+        name: "",
+        text: "",
+      ),
+    );
   }
 
   Future<void> saveState() async {
@@ -74,9 +91,11 @@ class NoteProvider extends ChangeNotifier {
   Future<void> loadState() async {
     final prefs = await SharedPreferences.getInstance();
     String? jsonString = prefs.getString('notes');
+    print(jsonString);
     if (jsonString != null) {
       List<dynamic> jsonNotes = jsonDecode(jsonString);
       _notes = jsonNotes.map((jsonNote) => Note.fromJson(jsonNote)).toList();
+      print(_notes);
       notifyListeners();
     }
   }

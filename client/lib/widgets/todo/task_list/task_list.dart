@@ -132,7 +132,7 @@ class _TaskListState extends State<TaskList> {
                     )
                   : IconButton(
                       onPressed: () async {
-                        await notifyServer(
+                        await notifyServerTodo(
                           widget.category,
                           jsonEncode(tasks),
                         );
