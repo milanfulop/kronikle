@@ -29,7 +29,6 @@ class _UpdateButtonState extends State<UpdateButton> {
     final String today = DateTime.now().toIso8601String().split('T').first;
 
     if (lastCheckedVersion == currentVersion && lastRequestDate == today) {
-      print('Version check already performed today and version unchanged');
       return;
     }
 

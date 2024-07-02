@@ -5,6 +5,7 @@ import 'package:client/pages/shells/left_drawer_button/left_drawer_button.dart';
 import 'package:client/pages/todo/todo_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DefaultShell extends StatefulWidget {
   const DefaultShell({super.key});
@@ -29,6 +30,14 @@ class _DefaultShellState extends State<DefaultShell> {
     setState(() {
       currentPage = page;
     });
+  }
+
+  void launchEmail() async {
+    final Uri url = Uri.parse(
+        'https://mail.google.com/mail/u/0/?to=appkronikle@gmail.com&su=Feature%20request&fs=1&tf=cm');
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    }
   }
 
   @override
@@ -102,10 +111,15 @@ class _DefaultShellState extends State<DefaultShell> {
                             onPressed: () => changePage("reminders"),
                           ),*/
                           Spacer(),
-                          LeftDrawerButton(
-                            text: "Settings",
-                            icon: Icon(Icons.settings_outlined),
-                            onPressed: () => changePage("settings"),
+                          Stack(
+                            children: [
+                              LeftDrawerButton(
+                                text: "Request a feature",
+                                icon: Icon(Icons.add),
+                                onPressed: launchEmail,
+                              ),
+                              Text("v0.2"),
+                            ],
                           ),
                         ],
                       ),

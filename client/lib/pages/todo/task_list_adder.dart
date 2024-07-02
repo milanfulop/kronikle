@@ -49,7 +49,7 @@ class _TaskListAdderState extends State<TaskListAdder> {
         ),
       ),
       child: Text(
-        'Add TaskList',
+        'Add Task Category',
         style: GoogleFonts.montserrat(color: Colors.black),
       ),
     );

@@ -11,6 +11,7 @@ import 'package:client/widgets/notes/note.dart';
 import 'package:client/widgets/todo/task_list/task_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
+import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:provider/provider.dart';
 
 import 'package:tray_manager/tray_manager.dart';
@@ -19,10 +20,6 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart' as router;
-
-// Firebase
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +32,6 @@ void main(List<String> args) async {
         : jsonDecode(args[2]) as Map<String, dynamic>;
 
     final noteProvider = NoteProvider();
-
     await noteProvider.loadState();
 
     final widgetData = getDataForWidget(
@@ -67,9 +63,10 @@ void main(List<String> args) async {
   } else {
     final taskProvider = TaskProvider();
     final noteProvider = NoteProvider();
+    // await setupLaunchAtStart();
     await initLocalServer(taskProvider, noteProvider);
-    await initFirebase();
-    await initTrayManager();
+    // await initFirebase();
+    // await initTrayManager();
     await initWindowManager();
     runApp(
       MultiProvider(
@@ -116,10 +113,14 @@ Map<String, dynamic> getDataForWidget(
   };
 }
 
-Future<void> initFirebase() async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+Future<void> setupLaunchAtStart() async {
+  launchAtStartup.setup(
+    appName: "Kronikle",
+    appPath: Platform.resolvedExecutable,
+    packageName: 'dev.kronikle.examples.kronikle',
   );
+
+  await launchAtStartup.enable();
 }
 
 Future<void> initWindowManager() async {
