@@ -1,4 +1,5 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:client/components/update_button/update_button.dart';
 import 'package:client/pages/notes/notes_page.dart';
 import 'package:client/pages/shells/left_drawer_button/left_drawer_button.dart';
 import 'package:client/pages/todo/todo_page.dart';
@@ -45,6 +46,7 @@ class _DefaultShellState extends State<DefaultShell> {
                     Expanded(
                       child: MoveWindow(),
                     ),
+                    const UpdateButton(),
                     MinimizeWindowButton(),
                     MaximizeWindowButton(),
                     CloseWindowButton(),

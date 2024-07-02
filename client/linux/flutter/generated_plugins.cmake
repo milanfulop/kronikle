@@ -8,6 +8,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   flutter_acrylic
   screen_retriever
   tray_manager
+  url_launcher_linux
   window_manager
 )
 
