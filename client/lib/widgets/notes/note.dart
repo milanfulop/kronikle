@@ -101,11 +101,16 @@ class _NoteWidgetState extends State<NoteWidget> {
         child: Stack(
           children: [
             Center(
-              child: Text(
-                note.name,
-                style: GoogleFonts.montserrat(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w500,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0, right: 32),
+                child: Text(
+                  note.name,
+                  style: GoogleFonts.montserrat(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
@@ -139,7 +144,7 @@ class _NoteWidgetState extends State<NoteWidget> {
                             PopupMenuItem(
                               child: const Text('Delete Note'),
                               onTap: () {
-                                print("Delete note");
+                                noteProvider.removeNote(note);
                               },
                             ),
                           ],

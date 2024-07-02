@@ -81,10 +81,10 @@ class _DefaultShellState extends State<DefaultShell> {
                           ),
                           LeftDrawerButton(
                             text: "Notes",
-                            icon: Icon(Icons.newspaper_outlined),
+                            icon: Icon(Icons.description_outlined),
                             onPressed: () => changePage("notes"),
                           ),
-                          LeftDrawerButton(
+                          /*LeftDrawerButton(
                             text: "Daily goals",
                             icon: Icon(Icons.wb_sunny_outlined),
                             onPressed: () => changePage("dailyGoals"),
@@ -98,7 +98,7 @@ class _DefaultShellState extends State<DefaultShell> {
                             text: "Reminders",
                             icon: Icon(Icons.alarm),
                             onPressed: () => changePage("reminders"),
-                          ),
+                          ),*/
                           Spacer(),
                           LeftDrawerButton(
                             text: "Settings",

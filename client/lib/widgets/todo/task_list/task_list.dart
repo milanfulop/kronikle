@@ -58,7 +58,8 @@ class _TaskListState extends State<TaskList> {
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _buildHeader(context, tasks, taskProvider),
+                      _buildHeader(
+                          context, tasks, taskProvider, widget.category),
                       Expanded(
                         child: SmoothListView(
                           duration: const Duration(milliseconds: 100),
@@ -92,10 +93,14 @@ class _TaskListState extends State<TaskList> {
   }
 
   Widget _buildHeader(
-      BuildContext context, List<Task> tasks, TaskProvider taskProvider) {
+    BuildContext context,
+    List<Task> tasks,
+    TaskProvider taskProvider,
+    String category,
+  ) {
     return Container(
       height: 64,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Color.fromARGB(255, 217, 217, 217),
         border: Border(
           bottom: BorderSide(color: Colors.black, width: 2),
@@ -145,9 +150,9 @@ class _TaskListState extends State<TaskList> {
                               onTap: () => onCreateWidget(taskProvider),
                             ),
                             PopupMenuItem(
-                              child: const Text('Delete Note'),
+                              child: const Text('Delete Category'),
                               onTap: () {
-                                print("Delete note");
+                                taskProvider.deleteCategory(category);
                               },
                             ),
                           ],
