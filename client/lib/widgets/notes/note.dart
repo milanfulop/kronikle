@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:client/data/note_data.dart';
 import 'package:client/utilities/create_widget.dart';
 import 'package:client/utilities/notify_server_subclient_close.dart';
@@ -115,13 +114,38 @@ class _NoteWidgetState extends State<NoteWidget> {
               child: widget.widgetId == null
                   ? IconButton(
                       onPressed: () async {
-                        noteProvider.toggleNoteHidden(widget.note.name);
-                        await createWidget(
-                          const Size(250, 400).toString(),
-                          "note:${widget.note.name}",
+                        final RenderBox button =
+                            context.findRenderObject() as RenderBox;
+                        final RenderBox overlay = Overlay.of(context)
+                            .context
+                            .findRenderObject() as RenderBox;
+                        final Offset position = button
+                            .localToGlobal(Offset.zero, ancestor: overlay);
+
+                        await showMenu(
+                          color: Colors.white,
+                          context: context,
+                          position: RelativeRect.fromLTRB(
+                            position.dx + 265,
+                            position.dy,
+                            position.dx + 265,
+                            position.dy,
+                          ),
+                          items: [
+                            PopupMenuItem(
+                              child: const Text('Create Widget'),
+                              onTap: () => onCreateWidget(noteProvider),
+                            ),
+                            PopupMenuItem(
+                              child: const Text('Delete Note'),
+                              onTap: () {
+                                print("Delete note");
+                              },
+                            ),
+                          ],
                         );
                       },
-                      icon: const Icon(Icons.do_not_touch),
+                      icon: const Icon(Icons.add),
                     )
                   : IconButton(
                       onPressed: () async {
@@ -137,6 +161,14 @@ class _NoteWidgetState extends State<NoteWidget> {
           ],
         ),
       ),
+    );
+  }
+
+  void onCreateWidget(NoteProvider noteProvider) async {
+    noteProvider.toggleNoteHidden(widget.note.name);
+    await createWidget(
+      const Size(250, 400).toString(),
+      "note:${widget.note.name}",
     );
   }
 }

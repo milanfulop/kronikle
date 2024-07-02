@@ -66,6 +66,15 @@ class TaskProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void deleteCategory(String category) async {
+    if (_taskLists.containsKey(category)) {
+      _taskLists.remove(category);
+      _categoryHidden.remove(category);
+      notifyListeners();
+      await saveState();
+    }
+  }
+
   void addTask(String category, Task task) async {
     _taskLists[category]?.add(task);
     notifyListeners();
